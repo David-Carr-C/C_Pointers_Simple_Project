@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+//Variables globales
 short uno = 0, dos = 0, tres = 0, cuatro = 0, cinco = 0, seis = 0;//Next //Boolean
 //Variable para saber si fue tomada la opcion o no
 
@@ -117,35 +118,37 @@ void reparacionesElegidas(float* costo) {
     } //No es else if, porque eso es para que solo tome una opcion de todas,
         //Es solo if para ir checando caso por caso si lo eligio
     if (dos==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Revision de frenos\n");
         printf("Costo: %.2f\n",1100.00);
     }
     if (tres==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Cambio de neumaticos\n");
         printf("Costo: %.2f\n",777.00);
     }
     if (cuatro==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Revision de amortiguadores\n");
         printf("Costo: %.2f\n",1550.00);
     }
     if (cinco==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Revision de las luces\n");
         printf("Costo: %.2f2\n",1090.00);
     }
     if (seis==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Cambio de bateria\n");
         printf("Costo: %.2f2\n",3050.00);
     }
     fprintf(recibo,"%c %d %c %d %c %d %c %d %c %d %c %d\n",'a',uno,'b',dos,'c',tres,'d',cuatro,'e',cinco,'f',seis);
     //Se leen los datos, primero a b c d e f que simboliza que repacacion es, y si es 1 o 0 para saber si la eligio
-    printf("Monto total: %f.2\n\n",*costo);
+    printf("Monto total: %.2f\n\n",*costo);
     fclose(recibo);
 }
 
 void logdespues() {
     char usuario[50], password[50];
+    printf("No ocupe espacios\n");
     gets(usuario);
     printf("Por favor cree una contraseña:\n");
+    printf("No ocupe espacios\n");
     gets(password);
 
     FILE *save = fopen("Log.txt","a+");
@@ -167,6 +170,7 @@ void creandoRecibo(float* costo){
 
 /////////////////////////////////////////////////////////
 void bienvenido(int* ffecha){
+    float totalapagar = 0;
     FILE *recibo = fopen("Recibos.txt","r");
     printf("Su compra llegara el %d de Diciembre\n",*ffecha);//Se me estaba olvidando el *
     printf("Su recibo es: \n");
@@ -176,31 +180,38 @@ void bienvenido(int* ffecha){
     if (elec1==1) {
         printf("Usted eligio Cambios de filtro y aceite\n");
         printf("Costo: %.2f\n",750.00);
+        totalapagar =  totalapagar+750.00;
     }
     if (elec2==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Revision de frenos\n");
         printf("Costo: %.2f\n",1100.00);
+        totalapagar =  totalapagar+1100.00;
     }
     if (elec3==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Cambio de neumaticos\n");
         printf("Costo: %.2f\n",777.00);
+        totalapagar =  totalapagar+777.00;
     }
     if (elec4==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Revision de amortiguadores\n");
         printf("Costo: %.2f\n",1550.00);
+        totalapagar =  totalapagar+1550.00;
     }
     if (elec5==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Revision de las luces\n");
         printf("Costo: %.2f\n",1090.00);
+        totalapagar =  totalapagar+1090.00;
     }
     if (elec6==1) {
-        printf("Usted eligio \n");
+        printf("Usted eligio Cambio de bateria\n");
         printf("Costo: %.2f\n",3050.00);
+        totalapagar =  totalapagar+3050.00;
     }
+    printf("Total a pagar: %.2f",totalapagar);
     printf("---------------------\n");
     fclose(recibo);
 }
-
+        //tener 'int *exit' es lo mismo que tener 'int* exit'
 void logantes(int* exit) {
     int autenticacion = 1;
 
@@ -209,25 +220,28 @@ void logantes(int* exit) {
     gets(nombredeusuario);
 
     FILE *log;
-    log = fopen("Log.txt","r");
+    log = fopen("Log.txt","a+");
+    rewind(log);//Pasa el puntero al inicio del archivo
     char fileusuario[50];
-    fscanf(log,"%s",&fileusuario);
-
+    fscanf(log,"%s",fileusuario);
+    //Recaba del archivo el usuario y lo compara con el que recabo del input del programa
     autenticacion = strcmp(nombredeusuario,fileusuario);
 
     if (autenticacion==0) {
         char fcontraseña[50];
-        char ffecha[2]; //No queria cargar del archivo un numero
-        int fffecha = 0;
-        fscanf(log,"%s",&fcontraseña);
+
+        char ffecha[2]; //Este es fecha de string
+        int fffecha = 0; //Este sera la variable para pasarla de string a entero
+
+        fscanf(log,"%s",fcontraseña);
         while ( strcmp(contrasenia,fcontraseña)!=0 ) {
             printf("Inserte su contraseña: ");
             gets(contrasenia);
             *exit = 1;
         }
-        fscanf(log, " %s",&ffecha); //Se forzara a cargar el numero
-        fffecha = atoi(ffecha);
-        fclose(log);
+        fscanf(log, " %s",ffecha); //Se forzara a cargar el numero pero como string
+        fffecha = atoi(ffecha); //Una vez obtenido el numero como string se pasa a entero/integer
+        fclose(log);//Todo archivo FILE que se abra se tiene que cerrar
         bienvenido(&fffecha);
     } else {
         printf("Usuario no encontrado\n");
@@ -239,7 +253,7 @@ void logantes(int* exit) {
 int main() {
     printf("Taller Mecanico\n");
     int exit = 0;
-    logantes(&exit);
+    logantes(&exit); //&variable <- 0x123123, variable
     if (exit==1) {
         return 0;
     }
@@ -262,7 +276,7 @@ int main() {
     char modelo[50];
     gets(modelo);
     //printf("Comprobacion de datos %s %s %s %s %s %s",nombre,direccion,placa,fecha,marca,modelo);
-    char seleccion = 0; //que mantenimiento de auto escogera
+    char seleccion = 'a'; //que mantenimiento de auto escogera
     float costo = 0, totalpagar = 0;
     int avanzo = 0; //Saber si se procede con la compra
     while (seleccion != 'x') {
